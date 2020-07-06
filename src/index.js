@@ -1,6 +1,13 @@
-import React from 'react'
-import styles from './styles.module.css'
+import DialogContainer from "./DialogContainer";
+import Dialog from './Dialog'
 
-export const ExampleComponent = ({ text }) => {
-  return <div className={styles.test}>Example Component: {text}</div>
+const dialog = function (render, options) {
+  const id = Math.random().toString(36).substr(2, 9);
+  return new Dialog(id, render, options);
+};
+
+const closeDialog = function (input) {
+  return Dialog.close(input);
 }
+
+export { DialogContainer, dialog, closeDialog };
