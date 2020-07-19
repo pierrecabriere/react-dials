@@ -4,6 +4,7 @@ class Dialog {
   id;
   render;
   options;
+  ref = null;
 
   static subject = new Subject();
 

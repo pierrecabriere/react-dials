@@ -2,6 +2,14 @@ import React from "react";
 import "./index.scss";
 import Dialog from '../Dialog'
 
+class DialogItem extends React.Component {
+  render() {
+    return <div className="dialog-item" id={this.props.dialog.id}>
+      {typeof this.props.dialog.render === "function" ? this.props.dialog.render() : this.props.dialog.render}
+    </div>
+  }
+}
+
 class DialogContainer extends React.Component {
   subscription;
   state = {
@@ -18,7 +26,7 @@ class DialogContainer extends React.Component {
       this.setState((prevState) => {
         const _dialog = prevState.stack.find((d) => d.id === dialog.id);
         if (!_dialog) {
-          prevState.stack.push(dialog);
+          return { ...prevState, stack: [...prevState.stack, dialog] };
         }
         return prevState;
       }, resolve);
@@ -59,17 +67,10 @@ class DialogContainer extends React.Component {
     this.setState((prevState) => {
       if (dialog) {
         dialog.options.close && dialog.options.close.apply(dialog);
-        prevState.stack.splice(prevState.stack.indexOf(dialog), 1);
+        return { ...prevState, stack: prevState.stack.filter(d => d !== dialog) }
       }
       return prevState;
     });
-  }
-
-  removeLast() {
-    const dialog = this.state.stack[this.state.stack.length - 1];
-    if (dialog) {
-      this.remove(dialog.id);
-    }
   }
 
   componentDidMount() {
@@ -87,6 +88,26 @@ class DialogContainer extends React.Component {
     });
   }
 
+  handleEscapeKeydown = (event) => {
+    // enter
+    if (parseInt(event.keyCode, 10) === 13) {
+      event.stopPropagation();
+    // escape
+    } else if (parseInt(event.keyCode, 10) === 27) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.state.stack[0].close();
+    }
+  };
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.state.stack.length === 1 && !prevState.stack.length) {
+      window.addEventListener("keydown", this.handleEscapeKeydown, false);
+    } else if (!this.state.stack.length && prevState.stack.length) {
+      window.removeEventListener("keydown", this.handleEscapeKeydown, false);
+    }
+  }
+
   componentWillUnmount() {
     this.subscription && this.subscription.unsubscribe();
   }
@@ -98,15 +119,9 @@ class DialogContainer extends React.Component {
         <div
           className="dialog-backdrop"
           data-size={open}
-          onClick={(e) => {
-            e.stopPropagation();
-            this.removeLast();
-          }}
         />
         {this.state.stack.map((dialog) => (
-          <div key={dialog.id} className="dialog-item" id={dialog.id}>
-            {dialog.render}
-          </div>
+          <DialogItem key={dialog.id} dialog={dialog} ref={node => dialog.ref = node} />
         ))}
       </div>
     );
