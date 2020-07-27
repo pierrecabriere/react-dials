@@ -26,6 +26,7 @@ class DialogContainer extends React.Component {
       this.setState((prevState) => {
         const _dialog = prevState.stack.find((d) => d.id === dialog.id);
         if (!_dialog) {
+          dialog.options.open && dialog.options.open.apply(dialog);
           return { ...prevState, stack: [...prevState.stack, dialog] };
         }
         return prevState;
@@ -96,7 +97,7 @@ class DialogContainer extends React.Component {
     } else if (parseInt(event.keyCode, 10) === 27) {
       event.preventDefault();
       event.stopPropagation();
-      this.state.stack[0].close();
+      this.state.stack[this.state.stack.length-1].close();
     }
   };
 
