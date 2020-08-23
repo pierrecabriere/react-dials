@@ -17,7 +17,11 @@ class DialogContainer extends React.Component {
   };
 
   getOptions(dialog) {
-    return { transitionTime: null, ...this.props, ...dialog.options };
+    if (dialog) {
+      return { ...this.props, ...dialog.options };
+    } else {
+      return this.props;
+    }
   }
 
   async add(dialog) {
@@ -30,10 +34,14 @@ class DialogContainer extends React.Component {
           return { ...prevState, stack: [...prevState.stack, dialog] };
         }
         return prevState;
-      }, resolve);
+      }, () => setTimeout(resolve));
     });
 
     const element = document.getElementById(dialog.id);
+
+    if (!element) {
+      return;
+    }
 
     if (options.transitionTime) {
       element.classList.add("opening");
@@ -46,24 +54,30 @@ class DialogContainer extends React.Component {
     }
   }
 
-  async remove(id) {
-    const dialog = this.state.stack.find((d) => d.id === id);
+  async remove(_dialog) {
+    const dialog = this.state.stack.find((d) => d.id === _dialog.id);
+    if (!dialog) {
+      return;
+    }
+
     const options = this.getOptions(dialog);
     const element = document.getElementById(dialog.id);
 
-    await new Promise((resolve) => {
-      if (options.transitionTime) {
-        element.classList.add("closing");
-        setTimeout(() => {
-          element.classList.remove("closing");
+    if (element) {
+      await new Promise((resolve) => {
+        if (options.transitionTime) {
+          element.classList.add("closing");
+          setTimeout(() => {
+            element.classList.remove("closing");
+            element.classList.remove("open");
+            resolve();
+          }, options.transitionTime);
+        } else {
           element.classList.remove("open");
           resolve();
-        }, options.transitionTime);
-      } else {
-        element.classList.remove("open");
-        resolve();
-      }
-    });
+        }
+      });
+    }
 
     this.setState((prevState) => {
       if (dialog) {
@@ -77,6 +91,11 @@ class DialogContainer extends React.Component {
   componentDidMount() {
     this.subscription = Dialog.subject.subscribe({
       next: ({ action, payload }) => {
+        const { id, default: _default } = this.props;
+        if ((!payload.options?.container && !_default) || (payload.options?.container && payload.options?.container !== id)) {
+          return;
+        }
+
         switch (action) {
           case "add":
             this.add(payload);
@@ -116,7 +135,7 @@ class DialogContainer extends React.Component {
   render() {
     const open = this.state.stack.length;
     return (
-      <div className={`dialog-container ${open ? "open" : ""}`}>
+      <div id={this.props.id} className={`dialog-container ${open ? "open" : ""}`}>
         <div
           className="dialog-backdrop"
           data-size={open}
@@ -128,5 +147,11 @@ class DialogContainer extends React.Component {
     );
   }
 }
+
+DialogContainer.defaultProps = {
+  id: null,
+  default: false,
+  transitionTime: null
+};
 
 export default DialogContainer;

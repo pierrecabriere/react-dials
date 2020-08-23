@@ -6,8 +6,8 @@ const dialog = function (render, options) {
   return new Dialog(id, render, options);
 };
 
-const closeDialog = function (input) {
-  return Dialog.close(input);
+const closeDialog = function (dialog) {
+  return Dialog.close(dialog);
 }
 
 export { DialogContainer, dialog, closeDialog };

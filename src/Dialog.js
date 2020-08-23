@@ -8,9 +8,8 @@ class Dialog {
 
   static subject = new Subject();
 
-  static close(input) {
-    const id = input instanceof Dialog ? input.id : input;
-    Dialog.subject.next({ action: "remove", payload: id });
+  static close(dialog) {
+    Dialog.subject.next({ action: "remove", payload: dialog });
   }
 
   constructor(id, render, options = {}) {
@@ -22,7 +21,11 @@ class Dialog {
   }
 
   close() {
-    Dialog.close(this.id);
+    Dialog.close(this);
+  }
+
+  update() {
+    this.ref?.forceUpdate();
   }
 }
 
