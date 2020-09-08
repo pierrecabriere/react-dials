@@ -8,6 +8,10 @@ class Dialog {
 
   static subject = new Subject();
 
+  static open(dialog) {
+    Dialog.subject.next({ action: "add", payload: dialog });
+  }
+
   static close(dialog) {
     Dialog.subject.next({ action: "remove", payload: dialog });
   }
@@ -17,7 +21,11 @@ class Dialog {
     this.render = render;
     this.options = options;
 
-    Dialog.subject.next({ action: "add", payload: this });
+    this.open();
+  }
+
+  open() {
+    Dialog.open(this);
   }
 
   close() {
