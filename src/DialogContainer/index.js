@@ -26,11 +26,17 @@ class DialogContainer extends React.Component {
 
   async add(dialog) {
     const options = this.getOptions(dialog);
+    if (dialog.options.open) {
+      const res = await dialog.options.open.apply(dialog);
+      if (res === false) {
+        return;
+      }
+    }
+
     await new Promise((resolve) => {
       this.setState((prevState) => {
         const _dialog = prevState.stack.find((d) => d.id === dialog.id);
         if (!_dialog) {
-          dialog.options.open && dialog.options.open.apply(dialog);
           return { ...prevState, stack: [...prevState.stack, dialog] };
         }
         return prevState;
@@ -60,6 +66,13 @@ class DialogContainer extends React.Component {
       return;
     }
 
+    if (dialog.options.close) {
+      const res = await dialog.options.close.apply(dialog);
+      if (res === false) {
+        return;
+      }
+    }
+
     const options = this.getOptions(dialog);
     const element = document.getElementById(dialog.id);
 
@@ -81,7 +94,6 @@ class DialogContainer extends React.Component {
 
     this.setState((prevState) => {
       if (dialog) {
-        dialog.options.close && dialog.options.close.apply(dialog);
         return { ...prevState, stack: prevState.stack.filter(d => d !== dialog) }
       }
       return prevState;
