@@ -58,6 +58,10 @@ class DialogContainer extends React.Component {
     } else {
       element.classList.add("open");
     }
+
+    if (this.props.onOpen) {
+      this.props.onOpen(dialog, this.state.stack);
+    }
   }
 
   async remove(_dialog) {
@@ -92,12 +96,16 @@ class DialogContainer extends React.Component {
       });
     }
 
-    this.setState((prevState) => {
+    await new Promise(resolve => this.setState((prevState) => {
       if (dialog) {
         return { ...prevState, stack: prevState.stack.filter(d => d !== dialog) }
       }
       return prevState;
-    });
+    }, () => setTimeout(resolve)));
+
+    if (this.props.onClose) {
+      this.props.onClose(dialog, this.state.stack);
+    }
   }
 
   componentDidMount() {
@@ -163,7 +171,9 @@ class DialogContainer extends React.Component {
 DialogContainer.defaultProps = {
   id: null,
   default: false,
-  transitionTime: null
+  transitionTime: null,
+  onOpen: null,
+  onClose: null
 };
 
 export default DialogContainer;
