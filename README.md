@@ -1,28 +1,51 @@
 # react-dials
 
-> Made with create-react-library
+Simple dialogs manager based on rxjs
 
-[![NPM](https://img.shields.io/npm/v/react-dials.svg)](https://www.npmjs.com/package/react-dials) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-
-## Install
-
-```bash
-npm install --save react-dials
-```
+--
 
 ## Usage
 
+### Add dialogs container to your app
+
 ```jsx
-import React, { Component } from 'react'
+import { DialogContainer } from "react-dials";
 
-import MyComponent from 'react-dials'
-import 'react-dials/dist/index.css'
+// render anywhere in your app
+<DialogContainer default />
+```
 
-class Example extends Component {
-  render() {
-    return <MyComponent />
-  }
-}
+### Add dialogs container to your app
+
+```jsx
+import { DialogContainer } from "react-dials";
+
+// render anywhere in your app
+<DialogContainer default />
+```
+
+### Create a dialog
+
+Then, you can create dialogs from anywhere in your app !
+
+```jsx
+import { dialog } from "react-dials";
+
+const myDialog = dialog(<div className="modal" onClick={myDialog.close}>Hello world !</div>);
+```
+
+## Advanced configuration
+
+### Multiple containers
+
+```jsx
+
+// render anywhere in your app
+<DialogContainer default />
+<DialogContainer id="anotherContainer" />
+
+const myDialog = dialog(<div className="modal" onClick={myDialog.close}>Hello world !</div>); // will render in the default container
+const mySecondDialog = dialog(<div className="modal" onClick={mySecondDialog.close}>Hello world !</div>, { container: "anotherContainer" }); // will render in the second container
 ```
 
 ## License
