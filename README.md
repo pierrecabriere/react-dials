@@ -25,6 +25,14 @@ import { dialog } from "react-dials";
 const myDialog = dialog(<div className="modal" onClick={myDialog.close}>Hello world !</div>);
 ```
 
+### Add default basic style
+
+This stylesheet is pretty simple, and you can create your own style instead of importing it !
+
+```js
+import "react-dials/dist/index.css";
+```
+
 ## Advanced configuration
 
 ### Multiple containers
