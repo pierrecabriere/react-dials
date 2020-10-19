@@ -15,15 +15,6 @@ import { DialogContainer } from "react-dials";
 <DialogContainer default />
 ```
 
-### Add dialogs container to your app
-
-```jsx
-import { DialogContainer } from "react-dials";
-
-// render anywhere in your app
-<DialogContainer default />
-```
-
 ### Create a dialog
 
 Then, you can create dialogs from anywhere in your app !
